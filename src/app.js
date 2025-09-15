@@ -25,38 +25,41 @@ app.use(cookieParser());
 const PgStore = pgSession(session);
 app.use(session({
   store: new PgStore({
-    pool: pool, // Use your existing PostgreSQL pool
-    tableName: 'session', // Table name for sessions
-    createTableIfMissing: true, // Automatically create session table
-    conObject: { // Explicitly pass database connection details
+    pool: pool,
+    tableName: 'session',
+    createTableIfMissing: true,
+    conObject: {
       connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false } // Required for Render's SSL
+      ssl: { rejectUnauthorized: false }
     }
   }),
-  secret: process.env.SESSION_SECRET, // Use the environment variable directly
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  cookie: { 
+  cookie: {
     httpOnly: true,
-    secure: true, // Enforce secure cookies for HTTPS on Render
-    sameSite: 'lax', // Compatible with redirect after login
-    maxAge: 24 * 60 * 60 * 1000 // 1 day default
+    secure: true,
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000
   }
 }));
 
-// Log session creation for debugging
+// Log session creation and errors
 app.use((req, res, next) => {
   console.log('New request - Session ID:', req.sessionID, 'Session:', req.session, 'Cookies:', req.cookies);
   next();
 });
 
-// Log session save errors
 app.use((err, req, res, next) => {
   console.error('Session save error:', err);
   next(err);
 });
 
-app.use('/api/auth', authRoutes);
+// Add logging to auth routes
+app.use('/api/auth', (req, res, next) => {
+  console.log(`Auth route ${req.method} ${req.url} - Session:`, req.session);
+  next();
+}, authRoutes);
 app.use('/api/users', usersRoutes);
 
 // Protected
@@ -74,7 +77,7 @@ app.get('/', (req, res) => {
 
 // Handle favicon.ico to prevent 404
 app.get('/favicon.ico', (req, res) => {
-  res.status(204).end(); // No content for favicon
+  res.status(204).end();
 });
 
 // 404 handler (keep it last)
@@ -82,8 +85,7 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, "..", "public", "404.html"));
 });
 
-// Server running ok!
-const PORT = process.env.PORT || 10000; // Match Render.com's expected port
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
