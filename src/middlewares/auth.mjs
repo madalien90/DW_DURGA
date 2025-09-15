@@ -1,7 +1,7 @@
+import express from 'express';
+
 export async function authMiddleware(req, res, next) {
-  console.log('Auth Middleware - Session:', req.session);
-  console.log('Auth Middleware - Cookies:', req.cookies);
-  // Check if session exists and contains user data
+  console.log('Auth Middleware - Session:', req.session, 'Cookies:', req.cookies);
   if (!req.session || !req.session.user) {
     console.log('Auth Middleware - Unauthorized: No session or user');
     if (req.originalUrl.startsWith('/api')) {
@@ -10,9 +10,7 @@ export async function authMiddleware(req, res, next) {
       return res.redirect('/login.html');
     }
   }
-
-  // Set user data from session
-  req.user = req.session.user; // { id, role }
+  req.user = req.session.user;
   console.log('Auth Middleware - User:', req.user);
   next();
 }
