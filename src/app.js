@@ -26,15 +26,16 @@ const PgStore = pgSession(session);
 app.use(session({
   store: new PgStore({
     pool: pool, // Use your existing PostgreSQL pool
-    ttl: 24 * 60 * 60, // Session TTL in seconds (1 day by default)
-    tableName: 'session' // Table name for sessions
+    tableName: 'session', // Table name for sessions
+    createTableIfMissing: true // Automatically create session table if it doesn't exist
   }),
   secret: process.env.SESSION_SECRET || 'change_this',
   resave: false,
   saveUninitialized: false,
   cookie: { 
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+    secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+    sameSite: 'lax', // Adjusted for better compatibility with cross-origin requests
     maxAge: 24 * 60 * 60 * 1000 // 1 day default
   }
 }));
@@ -61,7 +62,7 @@ app.use((req, res) => {
 });
 
 // Server running ok!
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000; // Match Render.com's expected port
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
