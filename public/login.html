@@ -47,12 +47,11 @@
         if (res.ok) {
           window.location.href = '/dashboard.html';
         } else {
-          // Show login form if not authenticated
+          console.log('Auth check response:', await res.text()); // Debug response
           document.getElementById('loginForm').style.display = 'block';
         }
       } catch (err) {
         console.error('Auth check failed:', err);
-        // Show login form
         document.getElementById('loginForm').style.display = 'block';
       }
     })();
@@ -85,6 +84,7 @@
         if (res.ok) {
           window.location.href = '/dashboard.html';
         } else {
+          console.log('Login response:', data); // Debug response
           showAlert('danger', data.error || 'Login failed. Try again.');
         }
       } catch (err) {
