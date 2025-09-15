@@ -46,9 +46,14 @@
         });
         if (res.ok) {
           window.location.href = '/dashboard.html';
+        } else {
+          // Show login form if not authenticated
+          document.getElementById('loginForm').style.display = 'block';
         }
       } catch (err) {
+        console.error('Auth check failed:', err);
         // Show login form
+        document.getElementById('loginForm').style.display = 'block';
       }
     })();
 
@@ -83,6 +88,7 @@
           showAlert('danger', data.error || 'Login failed. Try again.');
         }
       } catch (err) {
+        console.error('Login error:', err);
         showAlert('danger', 'Server error. Please try later.');
       }
     });
