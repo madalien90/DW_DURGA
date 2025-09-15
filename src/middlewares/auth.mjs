@@ -14,3 +14,5 @@ export async function authMiddleware(req, res, next) {
   console.log('Auth Middleware - User:', req.user);
   next();
 }
+
+export const router = express.Router();
