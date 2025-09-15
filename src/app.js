@@ -33,13 +33,13 @@ app.use(session({
       ssl: { rejectUnauthorized: false } // Required for Render's SSL
     }
   }),
-  secret: process.env.SESSION_SECRET || 'default_session_secret_please_change', // Fallback if not set
+  secret: process.env.SESSION_SECRET, // Use the environment variable directly
   resave: false,
   saveUninitialized: false,
   cookie: { 
     httpOnly: true,
     secure: true, // Enforce secure cookies for HTTPS on Render
-    sameSite: 'lax', // Changed to 'lax' for better compatibility
+    sameSite: 'lax', // Compatible with redirect after login
     maxAge: 24 * 60 * 60 * 1000 // 1 day default
   }
 }));
@@ -48,6 +48,12 @@ app.use(session({
 app.use((req, res, next) => {
   console.log('New request - Session ID:', req.sessionID, 'Session:', req.session, 'Cookies:', req.cookies);
   next();
+});
+
+// Log session save errors
+app.use((err, req, res, next) => {
+  console.error('Session save error:', err);
+  next(err);
 });
 
 app.use('/api/auth', authRoutes);
