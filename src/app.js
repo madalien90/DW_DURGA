@@ -30,15 +30,15 @@ app.use(session({
     createTableIfMissing: true, // Automatically create session table
     conObject: { // Explicitly pass database connection details
       connectionString: process.env.DATABASE_URL,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      ssl: { rejectUnauthorized: false } // Required for Render's SSL
     }
   }),
-  secret: process.env.SESSION_SECRET || 'default_session_secret_please_change',
+  secret: process.env.SESSION_SECRET || 'default_session_secret_please_change', // Fallback if not set
   resave: false,
   saveUninitialized: false,
   cookie: { 
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
+    secure: true, // Enforce secure cookies for HTTPS on Render
     sameSite: 'none', // Required for cross-origin cookies in HTTPS
     maxAge: 24 * 60 * 60 * 1000 // 1 day default
   }
@@ -46,7 +46,7 @@ app.use(session({
 
 // Log session creation for debugging
 app.use((req, res, next) => {
-  console.log('New request - Session ID:', req.sessionID, 'Session:', req.session);
+  console.log('New request - Session ID:', req.sessionID, 'Session:', req.session, 'Cookies:', req.cookies);
   next();
 });
 
