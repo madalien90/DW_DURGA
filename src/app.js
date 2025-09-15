@@ -27,18 +27,28 @@ app.use(session({
   store: new PgStore({
     pool: pool, // Use your existing PostgreSQL pool
     tableName: 'session', // Table name for sessions
-    createTableIfMissing: true // Automatically create session table if it doesn't exist
+    createTableIfMissing: true, // Automatically create session table
+    conObject: { // Explicitly pass database connection details
+      connectionString: process.env.DATABASE_URL,
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+    }
   }),
-  secret: process.env.SESSION_SECRET || 'change_this',
+  secret: process.env.SESSION_SECRET || 'default_session_secret_please_change',
   resave: false,
   saveUninitialized: false,
   cookie: { 
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production', // Ensure secure cookies in production
-    sameSite: 'lax', // Adjusted for better compatibility with cross-origin requests
+    sameSite: 'none', // Required for cross-origin cookies in HTTPS
     maxAge: 24 * 60 * 60 * 1000 // 1 day default
   }
 }));
+
+// Log session creation for debugging
+app.use((req, res, next) => {
+  console.log('New request - Session ID:', req.sessionID, 'Session:', req.session);
+  next();
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
@@ -54,6 +64,11 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // Routes
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+});
+
+// Handle favicon.ico to prevent 404
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end(); // No content for favicon
 });
 
 // 404 handler (keep it last)
