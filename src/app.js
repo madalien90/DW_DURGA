@@ -8,8 +8,8 @@ import usersRoutes from './routes/users.mjs';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import pgSession from 'connect-pg-simple';
-import pool from './config/db.mjs'; // Import the pool
-import './config/otpCleanup.mjs';   // Enable OTP auto-cleanup cron
+import pool from './config/db.mjs';
+import './config/otpCleanup.mjs';
 
 dotenv.config();
 const app = express();
