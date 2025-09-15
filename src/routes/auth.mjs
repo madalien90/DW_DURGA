@@ -159,6 +159,8 @@ router.post('/login', async (req, res) => {
     // Set session data
     req.session.user = { id: user.id, role: user.role_name };
     req.session.cookie.maxAge = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 1 day
+    await new Promise((resolve) => req.session.save(resolve)); // Explicitly save session
+    console.log('Login - Session after save:', req.session);
 
     try {
       await pool.query('UPDATE users SET is_logged_in = true WHERE id = $1', [user.id]);
