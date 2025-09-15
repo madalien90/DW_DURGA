@@ -86,7 +86,7 @@
           // Delay redirect to allow console inspection
           setTimeout(() => {
             window.location.href = '/dashboard.html';
-          }, 2000); // 2-second delay
+          }, 5000); // 5-second delay
           showAlert('success', 'Login successful. Redirecting...');
         } else {
           showAlert('danger', data.error || 'Login failed. Try again.');
