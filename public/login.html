@@ -37,7 +37,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // If already logged in, redirect to dashboard
     (async () => {
       try {
         const res = await fetch('/api/auth/me', {
@@ -53,7 +52,7 @@
         }
       } catch (err) {
         console.error('Auth check failed:', err);
-        document.getElementById('login.html').style.display = 'block';
+        document.getElementById('loginForm').style.display = 'block';
       }
     })();
 
@@ -62,7 +61,7 @@
       alertBox.innerHTML = `
         <div class="alert alert-${type} alert-dismissible fade show" role="alert">
           ${message}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <button type="button" btn-close" data-bs-dismiss="alert"></button>
         </div>`;
     }
 
@@ -83,10 +82,9 @@
         console.log('Login response:', data);
 
         if (res.ok) {
-          // Delay redirect to allow console inspection
           setTimeout(() => {
             window.location.href = '/dashboard.html';
-          }, 5000); // 5-second delay
+          }, 2000);
           showAlert('success', 'Login successful. Redirecting...');
         } else {
           showAlert('danger', data.error || 'Login failed. Try again.');
