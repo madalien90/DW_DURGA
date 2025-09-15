@@ -79,9 +79,8 @@
           credentials: 'include', // Ensure session cookie is sent
           body: JSON.stringify({ email, password, rememberMe })
         });
-        const text = await res.text(); // Log raw response
-        console.log('Login response:', text);
-        const data = await res.json(); // Attempt to parse as JSON
+        const data = await res.json(); // Parse JSON first
+        console.log('Login response:', data);
 
         if (res.ok) {
           window.location.href = '/dashboard.html';
