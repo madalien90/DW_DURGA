@@ -160,28 +160,23 @@ router.post('/login', async (req, res) => {
     req.session.user = { id: user.id, role: user.role_name };
     req.session.cookie.maxAge = rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000; // 7 days or 1 day
 
-    // Explicitly save session with error handling
-    try {
-      await new Promise((resolve, reject) => {
-        req.session.save((err) => (err ? reject(err) : resolve()));
-      });
-      console.log('Login - Session after save:', req.session);
-    } catch (saveErr) {
-      console.error('Session save failed:', saveErr);
-      return res.status(500).json({ error: 'Failed to save session' });
-    }
-
     try {
       await pool.query('UPDATE users SET is_logged_in = true WHERE id = $1', [user.id]);
     } catch (dbErr) {
       console.error('Failed to set is_logged_in on login:', dbErr.message);
     }
 
-    res.json({ message: 'Login successful', redirect: '/dashboard.html' });
+    // Explicitly save session with error handling
+    await new Promise((resolve, reject) => {
+      req.session.save((err) => (err ? reject(err) : resolve()));
+    });
+    console.log('Login - Session after save:', req.session);
   } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ error: 'Login failed' });
+    console.error('Login error or session save failed:', err);
+    return res.status(500).json({ error: 'Login or session save failed' });
   }
+
+  res.json({ message: 'Login successful', redirect: '/dashboard.html' });
 });
 
 // FORGOT PASSWORD → Send OTP
