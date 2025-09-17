@@ -1,7 +1,7 @@
 {
   "name": "dw-durga",
   "version": "1.0.0",
-  "description": "DW-DURGA Application (Node.js + Express + PostgreSQL + Keycloak)",
+  "description": "DW-DURGA Application (Node.js + Express + PostgreSQL + Bootstrap)",
   "type": "module",
   "main": "src/app.js",
   "scripts": {
